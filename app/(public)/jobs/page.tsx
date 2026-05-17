@@ -93,15 +93,12 @@ export default async function JobsPage({
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar */}
-        <aside className="lg:w-64 shrink-0">
+        {/* Left sidebar: filters */}
+        <aside className="lg:w-56 shrink-0">
           <FilterPanel categories={categories} />
-          <div className="hidden lg:block mt-6">
-            <QuickAlertSignup />
-          </div>
         </aside>
 
-        {/* Listings */}
+        {/* Center: listings */}
         <div className="flex-1 min-w-0">
           <p className="text-sm text-gray-500 mb-4">{resultLabel}</p>
 
@@ -132,12 +129,19 @@ export default async function JobsPage({
               )}
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Mobile alert signup */}
-      <div className="lg:hidden mt-8">
-        <QuickAlertSignup />
+          {/* Mobile alert signup: below listings */}
+          <div className="lg:hidden mt-8">
+            <QuickAlertSignup />
+          </div>
+        </div>
+
+        {/* Right sidebar: alert signup (desktop only) */}
+        <aside className="hidden lg:block lg:w-72 shrink-0">
+          <div className="sticky top-20">
+            <QuickAlertSignup />
+          </div>
+        </aside>
       </div>
     </div>
   );
