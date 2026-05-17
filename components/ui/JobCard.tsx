@@ -14,7 +14,7 @@ function formatJobType(type: string | null): string {
 
 function formatPay(listing: JobListingWithEmployer): string | null {
   if (!listing.pay_min && !listing.pay_max) return null;
-  const suffix = listing.pay_type === "hourly" ? "/hr" : listing.pay_type === "salary" ? "/yr" : "";
+  const suffix = listing.pay_type === "hourly" ? "/hr" : listing.pay_type === "salary" ? "/yr" : listing.pay_type === "tips_plus" ? " + tips" : "";
   if (listing.pay_min && listing.pay_max) {
     return `$${listing.pay_min}–$${listing.pay_max}${suffix}`;
   }
