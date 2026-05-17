@@ -1,6 +1,17 @@
 import SearchBar from "@/components/ui/SearchBar";
 import BlogCard from "@/components/ui/BlogCard";
 import { getAllPosts } from "@/lib/blog/posts";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Utah Hospitality Insiders — Utah's Hospitality Jobs Community",
+  description: "Find hotel, restaurant, and resort jobs across Utah. Built by insiders, for insiders.",
+  openGraph: {
+    title: "Utah Hospitality Insiders — Utah's Hospitality Jobs Community",
+    description: "Find hotel, restaurant, and resort jobs across Utah — or connect with qualified local candidates.",
+    type: "website",
+  },
+};
 
 const VALUE_PROPS = [
   {
@@ -58,7 +69,7 @@ export default function HomePage() {
             qualified local candidates. Built by insiders, for insiders.
           </p>
           <div className="mt-8 flex justify-center">
-            <SearchBar />
+            <SearchBar preserveParams={false} />
           </div>
         </div>
       </section>

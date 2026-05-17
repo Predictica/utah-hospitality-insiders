@@ -1,13 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  }
+
+  function linkClass(href: string) {
+    return `transition-colors ${
+      isActive(href) ? "text-white font-semibold" : "text-blue-200 hover:text-white"
+    }`;
+  }
 
   return (
-    <header className="bg-[#1F4E79] text-white">
+    <header className="bg-[#1F4E79] text-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="text-xl font-bold tracking-tight">
@@ -15,18 +28,22 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/jobs" className="hover:text-blue-200 transition-colors">
+            <Link href="/jobs" className={linkClass("/jobs")}>
               Jobs
             </Link>
-            <Link href="/blog" className="hover:text-blue-200 transition-colors">
+            <Link href="/blog" className={linkClass("/blog")}>
               Blog
             </Link>
-            <Link href="/employers" className="hover:text-blue-200 transition-colors">
+            <Link href="/employers" className={linkClass("/employers")}>
               Post a Job
             </Link>
             <Link
               href="/candidates"
-              className="bg-white text-[#1F4E79] px-4 py-2 rounded-md hover:bg-blue-50 transition-colors"
+              className={`px-4 py-2 rounded-md transition-colors ${
+                isActive("/candidates")
+                  ? "bg-white text-[#1F4E79]"
+                  : "bg-white/90 text-[#1F4E79] hover:bg-white"
+              }`}
             >
               Get Job Alerts
             </Link>
@@ -49,13 +66,13 @@ export default function Header() {
 
         {mobileOpen && (
           <nav className="md:hidden pb-4 flex flex-col gap-3 text-sm font-medium">
-            <Link href="/jobs" className="hover:text-blue-200" onClick={() => setMobileOpen(false)}>
+            <Link href="/jobs" className={linkClass("/jobs")} onClick={() => setMobileOpen(false)}>
               Jobs
             </Link>
-            <Link href="/blog" className="hover:text-blue-200" onClick={() => setMobileOpen(false)}>
+            <Link href="/blog" className={linkClass("/blog")} onClick={() => setMobileOpen(false)}>
               Blog
             </Link>
-            <Link href="/employers" className="hover:text-blue-200" onClick={() => setMobileOpen(false)}>
+            <Link href="/employers" className={linkClass("/employers")} onClick={() => setMobileOpen(false)}>
               Post a Job
             </Link>
             <Link
