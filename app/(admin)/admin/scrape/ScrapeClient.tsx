@@ -21,10 +21,14 @@ interface ScrapeResult {
   details: { employer: string; found: number; inserted: number; error?: string }[];
 }
 
-export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
+const SCRAPE_TOKEN = "utah-hospitality-insiders-scrape-2026";
+
+export default function ScrapeClient({ targets: initialTargets }: { targets: ScrapeTarget[] }) {
+  const [targets, setTargets] = useState<ScrapeTarget[]>(initialTargets);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<ScrapeResult | null>(null);
   const [error, setError] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Add target form
   const [newName, setNewName] = useState("");
@@ -38,7 +42,7 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
 
     try {
       const res = await fetch("/api/scrape", {
-        headers: { "x-scrape-token": "utah-hospitality-insiders-scrape-2026" },
+        headers: { "x-scrape-token": SCRAPE_TOKEN },
       });
       const data = await res.json();
 
@@ -64,7 +68,7 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-scrape-token": "utah-hospitality-insiders-scrape-2026",
+          "x-scrape-token": SCRAPE_TOKEN,
         },
         body: JSON.stringify({
           employer_name: newName.trim(),
@@ -72,7 +76,9 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
         }),
       });
       if (res.ok) {
-        setAddStatus("Added! Refresh page to see it.");
+        const newTarget = await res.json();
+        setTargets((prev) => [...prev, newTarget]);
+        setAddStatus("Added!");
         setNewName("");
         setNewUrl("");
       } else {
@@ -82,6 +88,30 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
     } catch {
       setAddStatus("Network error.");
     }
+  }
+
+  async function deleteTarget(id: string) {
+    if (!confirm("Are you sure you want to delete this target?")) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch("/api/scrape/targets", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-scrape-token": SCRAPE_TOKEN,
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        setTargets((prev) => prev.filter((t) => t.id !== id));
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to delete.");
+      }
+    } catch {
+      alert("Network error.");
+    }
+    setDeletingId(null);
   }
 
   return (
@@ -191,6 +221,7 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
                 <th className="text-left px-3 py-2 text-gray-600">URL</th>
                 <th className="text-left px-3 py-2 text-gray-600">Last Scraped</th>
                 <th className="text-center px-3 py-2 text-gray-600">Active</th>
+                <th className="text-center px-3 py-2 text-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -213,6 +244,15 @@ export default function ScrapeClient({ targets }: { targets: ScrapeTarget[] }) {
                     ) : (
                       <span className="text-gray-400">No</span>
                     )}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    <button
+                      onClick={() => deleteTarget(t.id)}
+                      disabled={deletingId === t.id}
+                      className="text-red-600 hover:text-red-800 text-xs font-medium disabled:opacity-50"
+                    >
+                      {deletingId === t.id ? "Deleting..." : "Delete"}
+                    </button>
                   </td>
                 </tr>
               ))}
