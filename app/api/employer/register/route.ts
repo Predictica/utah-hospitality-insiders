@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Use the server client for auth signup (uses anon key, respects auth flow)
     const supabase = await createServerClient();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://utah-hospitality-insiders.vercel.app";
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
