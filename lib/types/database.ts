@@ -8,6 +8,7 @@ export interface JobCategory {
 
 export interface Employer {
   id: string;
+  auth_user_id: string | null;
   company_name: string;
   contact_name: string;
   email: string;
@@ -19,6 +20,7 @@ export interface Employer {
   is_small_business: boolean;
   is_verified: boolean;
   is_active: boolean;
+  email_verified: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -1,12 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isEmployer, setIsEmployer] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        setIsEmployer(!!user);
+      } catch {
+        setIsEmployer(false);
+      }
+    }
+    checkAuth();
+  }, [pathname]);
+
+  async function handleLogout() {
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      setIsEmployer(false);
+      router.push("/");
+      router.refresh();
+    } catch {
+      // silently fail
+    }
+  }
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
@@ -34,9 +65,26 @@ export default function Header() {
             <Link href="/blog" className={linkClass("/blog")}>
               Blog
             </Link>
-            <Link href="/employers" className={linkClass("/employers")}>
-              Post a Job
-            </Link>
+            {isEmployer ? (
+              <>
+                <Link
+                  href="/employer/dashboard"
+                  className={linkClass("/employer")}
+                >
+                  My Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-blue-200 hover:text-white transition-colors"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <Link href="/employer/login" className={linkClass("/employer")}>
+                Post a Job
+              </Link>
+            )}
             <Link
               href="/candidates"
               className={`px-4 py-2 rounded-md transition-colors ${
@@ -72,9 +120,34 @@ export default function Header() {
             <Link href="/blog" className={linkClass("/blog")} onClick={() => setMobileOpen(false)}>
               Blog
             </Link>
-            <Link href="/employers" className={linkClass("/employers")} onClick={() => setMobileOpen(false)}>
-              Post a Job
-            </Link>
+            {isEmployer ? (
+              <>
+                <Link
+                  href="/employer/dashboard"
+                  className={linkClass("/employer")}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  My Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleLogout();
+                  }}
+                  className="text-left text-blue-200 hover:text-white transition-colors"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/employer/login"
+                className={linkClass("/employer")}
+                onClick={() => setMobileOpen(false)}
+              >
+                Post a Job
+              </Link>
+            )}
             <Link
               href="/candidates"
               className="bg-white text-[#1F4E79] px-4 py-2 rounded-md text-center"

@@ -116,7 +116,12 @@ export default function ScrapeClient({ targets: initialTargets }: { targets: Scr
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Scraper Admin</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-bold text-gray-900">Scraper Admin</h1>
+        <a href="/admin/employers" className="text-[#1F4E79] text-sm font-medium hover:underline">
+          Employer Admin &rarr;
+        </a>
+      </div>
       <p className="text-gray-500 text-sm mb-8">
         Manage scrape targets and trigger manual scrape runs.
       </p>
