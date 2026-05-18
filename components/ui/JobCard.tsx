@@ -43,9 +43,9 @@ export default function JobCard({ listing }: { listing: JobListingWithEmployer }
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-semibold text-gray-900 text-lg truncate">{listing.title}</h3>
-          {listing.employers && (
+          {(listing.employers || listing.employer_name) && (
             <p className="text-[#1F4E79] font-medium text-sm mt-0.5">
-              {listing.employers.company_name}
+              {listing.employers?.company_name || listing.employer_name}
             </p>
           )}
         </div>

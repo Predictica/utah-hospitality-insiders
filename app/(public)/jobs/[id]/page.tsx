@@ -12,6 +12,19 @@ interface JobListingDetail extends JobListing {
   job_categories: { name: string } | null;
 }
 
+function getEmployerDisplay(listing: JobListingDetail): string | null {
+  if (listing.employers) return listing.employers.company_name;
+  if (listing.employer_name) return listing.employer_name;
+  if (listing.scraped_source_url) {
+    try {
+      return new URL(listing.scraped_source_url).hostname.replace("www.", "");
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 async function getListing(id: string): Promise<JobListingDetail | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
@@ -33,7 +46,7 @@ export async function generateMetadata({
   const listing = await getListing(id);
   if (!listing) return { title: "Job Not Found | Utah Hospitality Insiders" };
 
-  const employer = listing.employers?.company_name || "";
+  const employer = listing.employers?.company_name || listing.employer_name || "";
   const title = employer
     ? `${listing.title} at ${employer} | Utah Hospitality Insiders`
     : `${listing.title} | Utah Hospitality Insiders`;
@@ -97,7 +110,7 @@ export default async function JobDetailPage({
           )}
         </div>
 
-        {listing.employers && (
+        {listing.employers ? (
           <div className="mt-1">
             <span className="text-[#1F4E79] font-medium">
               {listing.employers.company_name}
@@ -113,7 +126,13 @@ export default async function JobDetailPage({
               </a>
             )}
           </div>
-        )}
+        ) : listing.employer_name ? (
+          <p className="mt-1 text-[#1F4E79] font-medium">{listing.employer_name}</p>
+        ) : listing.scraped_source_url ? (
+          <p className="mt-1 text-[#1F4E79] font-medium">
+            {new URL(listing.scraped_source_url).hostname.replace("www.", "")}
+          </p>
+        ) : null}
 
         <div className="flex flex-wrap gap-2 mt-4 text-sm">
           {listing.location_city && (
@@ -151,7 +170,12 @@ export default async function JobDetailPage({
 
         {listing.application_url && (
           <div className="mt-8">
-            <ApplyButton listingId={listing.id} applicationUrl={listing.application_url} />
+            <ApplyButton
+              listingId={listing.id}
+              applicationUrl={listing.application_url}
+              label={listing.source === "scraped" ? "View Full Job Details & Apply" : "Apply Now"}
+              note={listing.source === "scraped" ? "This will take you to the employer's careers page to view the complete job description and apply." : undefined}
+            />
           </div>
         )}
 

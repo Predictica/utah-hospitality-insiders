@@ -26,6 +26,7 @@ export interface Employer {
 export interface JobListing {
   id: string;
   employer_id: string | null;
+  employer_name: string | null;
   source: "scraped" | "free" | "standard" | "sponsored";
   title: string;
   description: string | null;

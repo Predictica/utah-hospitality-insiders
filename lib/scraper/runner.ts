@@ -87,6 +87,7 @@ export async function runScrapeJob(): Promise<ScrapeResult> {
           .insert({
             title: job.title,
             description: job.description,
+            employer_name: target.employer_name,
             location_city: job.location,
             location_region: job.location,
             job_type: job.job_type,
