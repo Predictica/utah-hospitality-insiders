@@ -21,9 +21,14 @@ export async function scrapeJobsFromUrl(
   const firecrawl = new FirecrawlApp({ apiKey });
 
   try {
-    console.log(`[Scraper] Scraping ${employerName}: ${url}`);
+    // Append cache-busting parameter so Firecrawl treats each run as a fresh request
+    const cacheBustUrl = url.includes("?")
+      ? `${url}&t=${Date.now()}`
+      : `${url}?t=${Date.now()}`;
 
-    const scrapePromise = firecrawl.scrape(url, {
+    console.log(`[Scraper] Scraping ${employerName}: ${cacheBustUrl}`);
+
+    const scrapePromise = firecrawl.scrape(cacheBustUrl, {
       formats: [
         {
           type: "json",
@@ -37,6 +42,8 @@ export async function scrapeJobsFromUrl(
 Return an array of job objects. Only include actual job postings, not navigation links or general content.`,
         },
       ],
+      actions: [],
+      skipTlsVerification: false,
       timeout: 45000,
     });
 
