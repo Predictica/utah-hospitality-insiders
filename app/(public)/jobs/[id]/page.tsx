@@ -24,16 +24,10 @@ async function getListing(id: string): Promise<JobListingDetail | null> {
   return data as unknown as JobListingDetail | null;
 }
 
-async function getScrapeTargetName(scraped_source_url: string): Promise<string | null> {
-  if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("scrape_targets")
-    .select("employer_name")
-    .eq("careers_page_url", scraped_source_url)
-    .limit(1);
-  const targets = data as unknown as { employer_name: string }[] | null;
-  return targets?.[0]?.employer_name ?? null;
+function getEmployerName(listing: JobListingDetail): string {
+  if (listing.employers) return listing.employers.company_name;
+  if (listing.employer_name) return listing.employer_name;
+  return "Utah Hospitality Insiders";
 }
 
 export async function generateMetadata({
@@ -45,16 +39,8 @@ export async function generateMetadata({
   const listing = await getListing(id);
   if (!listing) return { title: "Job Not Found | Utah Hospitality Insiders" };
 
-  let employer = listing.employers?.company_name || listing.employer_name || "";
-  if (!employer && listing.scraped_source_url) {
-    employer = await getScrapeTargetName(listing.scraped_source_url) || "";
-  }
-  if (!employer && listing.source === "scraped") {
-    employer = "Utah Hospitality Insiders";
-  }
-  const title = employer
-    ? `${listing.title} at ${employer} | Utah Hospitality Insiders`
-    : `${listing.title} | Utah Hospitality Insiders`;
+  const employer = getEmployerName(listing);
+  const title = `${listing.title} at ${employer} | Utah Hospitality Insiders`;
 
   return {
     title,
@@ -72,17 +58,7 @@ export default async function JobDetailPage({
   const listing = await getListing(id);
   if (!listing) notFound();
 
-  // For scraped listings, look up the scrape target to get the employer name
-  let scrapeTargetName: string | null = null;
-  if (listing.scraped_source_url) {
-    scrapeTargetName = await getScrapeTargetName(listing.scraped_source_url);
-  }
-
-  const displayEmployerName =
-    listing.employers?.company_name ||
-    listing.employer_name ||
-    scrapeTargetName ||
-    (listing.source === "scraped" ? "Utah Hospitality Insiders" : null);
+  const displayEmployerName = getEmployerName(listing);
 
   const jobTypeLabels: Record<string, string> = {
     full_time: "Full Time",
@@ -143,9 +119,9 @@ export default async function JobDetailPage({
               </a>
             )}
           </div>
-        ) : displayEmployerName ? (
+        ) : (
           <p className="mt-1 text-[#1F4E79] font-medium">{displayEmployerName}</p>
-        ) : null}
+        )}
 
         <div className="flex flex-wrap gap-2 mt-4 text-sm">
           {listing.location_city && (

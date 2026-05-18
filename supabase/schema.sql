@@ -50,6 +50,7 @@ create table employers (
 create table job_listings (
   id uuid default gen_random_uuid() primary key,
   employer_id uuid references employers(id) on delete set null,
+  employer_name text,
   source text not null default 'free' check (source in ('scraped', 'free', 'standard', 'sponsored')),
   title text not null,
   description text,
