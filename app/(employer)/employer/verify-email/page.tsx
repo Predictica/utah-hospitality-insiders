@@ -16,9 +16,13 @@ function VerifyEmailContent() {
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
+      const siteUrl = window.location.origin;
       await supabase.auth.resend({
         type: "signup",
         email,
+        options: {
+          emailRedirectTo: `${siteUrl}/auth/callback`,
+        },
       });
       setResent(true);
     } catch {

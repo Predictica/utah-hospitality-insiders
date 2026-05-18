@@ -11,6 +11,7 @@ function LoginForm() {
   const verified = searchParams.get("verified");
   const redirect = searchParams.get("redirect");
   const reset = searchParams.get("reset");
+  const authError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,6 +73,16 @@ function LoginForm() {
         {reset && (
           <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm mb-4">
             Password reset successfully! Sign in with your new password.
+          </div>
+        )}
+
+        {authError && (
+          <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm mb-4">
+            {authError === "missing_code"
+              ? "Invalid verification link. Please request a new one."
+              : authError === "verification_failed"
+              ? "Email verification failed. The link may have expired. Please request a new one."
+              : "An error occurred. Please try again."}
           </div>
         )}
 

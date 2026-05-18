@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       email,
       password,
       options: {
-        emailRedirectTo: `${siteUrl}/employer/login?verified=true`,
+        emailRedirectTo: `${siteUrl}/auth/callback`,
       },
     });
 
