@@ -41,14 +41,21 @@ export async function POST(request: NextRequest) {
   // Send welcome email for new signups
   try {
     const { subject, html } = welcomeEmail("there", candidateEmail);
-    await resend.emails.send({
+    console.log("[QuickSignup] Sending welcome email to:", candidateEmail);
+    console.log("[QuickSignup] Subject:", subject);
+    const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Utah Hospitality Insiders <onboarding@resend.dev>",
       to: candidateEmail,
       subject,
       html,
     });
+    if (emailError) {
+      console.error("[QuickSignup] Resend API error:", JSON.stringify(emailError));
+    } else {
+      console.log("[QuickSignup] Welcome email sent successfully. ID:", emailData?.id);
+    }
   } catch (emailErr) {
-    console.error("[QuickSignup] Welcome email failed (non-fatal):", emailErr);
+    console.error("[QuickSignup] Welcome email exception:", emailErr);
   }
 
   return NextResponse.json({ success: true });

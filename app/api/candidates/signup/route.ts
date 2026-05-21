@@ -65,14 +65,21 @@ export async function POST(request: NextRequest) {
   try {
     const candidateName = [body.first_name, body.last_name].filter(Boolean).join(" ") || "there";
     const { subject, html } = welcomeEmail(candidateName, candidateData.email);
-    await resend.emails.send({
+    console.log("[Signup] Sending welcome email to:", candidateData.email);
+    console.log("[Signup] Subject:", subject);
+    const { data: emailData, error: emailError } = await resend.emails.send({
       from: "Utah Hospitality Insiders <onboarding@resend.dev>",
       to: candidateData.email,
       subject,
       html,
     });
+    if (emailError) {
+      console.error("[Signup] Resend API error:", JSON.stringify(emailError));
+    } else {
+      console.log("[Signup] Welcome email sent successfully. ID:", emailData?.id);
+    }
   } catch (emailErr) {
-    console.error("[Signup] Welcome email failed (non-fatal):", emailErr);
+    console.error("[Signup] Welcome email exception:", emailErr);
   }
 
   return NextResponse.json({
