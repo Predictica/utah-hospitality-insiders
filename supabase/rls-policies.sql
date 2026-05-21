@@ -23,3 +23,16 @@ create policy "Anyone can insert listing clicks"
 on listing_clicks for insert
 to anon
 with check (true);
+
+-- Alert sends (service role only)
+alter table alert_sends enable row level security;
+
+create policy "Service role can insert alert sends"
+on alert_sends for insert
+to service_role
+with check (true);
+
+create policy "Service role can read alert sends"
+on alert_sends for select
+to service_role
+using (true);

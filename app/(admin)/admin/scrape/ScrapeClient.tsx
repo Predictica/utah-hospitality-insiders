@@ -30,6 +30,11 @@ export default function ScrapeClient({ targets: initialTargets }: { targets: Scr
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Digest state
+  const [sendingDigest, setSendingDigest] = useState(false);
+  const [digestResult, setDigestResult] = useState<{ sent: number } | null>(null);
+  const [digestError, setDigestError] = useState("");
+
   // Add target form
   const [newName, setNewName] = useState("");
   const [newUrl, setNewUrl] = useState("");
@@ -56,6 +61,29 @@ export default function ScrapeClient({ targets: initialTargets }: { targets: Scr
     }
 
     setRunning(false);
+  }
+
+  async function runDigest() {
+    setSendingDigest(true);
+    setDigestResult(null);
+    setDigestError("");
+
+    try {
+      const res = await fetch("/api/alerts/digest", {
+        headers: { "x-scrape-token": SCRAPE_TOKEN },
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setDigestResult({ sent: data.sent });
+      } else {
+        setDigestError(data.error || "Failed to send digest");
+      }
+    } catch {
+      setDigestError("Network error — could not reach digest endpoint.");
+    }
+
+    setSendingDigest(false);
   }
 
   async function addTarget(e: React.FormEvent) {
@@ -211,6 +239,40 @@ export default function ScrapeClient({ targets: initialTargets }: { targets: Scr
                 </ul>
               </div>
             )}
+          </div>
+        )}
+      </div>
+
+      {/* Daily Digest */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Email Alerts</h2>
+        <button
+          onClick={runDigest}
+          disabled={sendingDigest}
+          className="bg-green-700 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-green-800 transition-colors disabled:opacity-70 flex items-center gap-2"
+        >
+          {sendingDigest ? (
+            <>
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Sending...
+            </>
+          ) : (
+            "Send Daily Digest Now"
+          )}
+        </button>
+
+        {digestError && (
+          <div className="mt-4 bg-red-50 text-red-700 p-3 rounded-lg text-sm">{digestError}</div>
+        )}
+
+        {digestResult && (
+          <div className="mt-4 bg-green-50 p-3 rounded-lg">
+            <p className="text-green-700 text-sm font-medium">
+              Digest sent to {digestResult.sent} candidate{digestResult.sent !== 1 ? "s" : ""}.
+            </p>
           </div>
         )}
       </div>

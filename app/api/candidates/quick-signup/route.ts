@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { resend } from "@/lib/email/resend";
+import { welcomeEmail } from "@/lib/email/templates";
 
 export async function POST(request: NextRequest) {
   const { email } = await request.json();
@@ -23,15 +25,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ exists: true });
   }
 
+  const candidateEmail = email.toLowerCase();
+
   const { error } = await supabase.from("candidates").insert({
     first_name: "",
     last_name: "",
-    email: email.toLowerCase(),
+    email: candidateEmail,
     email_opted_in: true,
   });
 
   if (error) {
     return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+  }
+
+  // Send welcome email for new signups
+  try {
+    const { subject, html } = welcomeEmail("there", candidateEmail);
+    await resend.emails.send({
+      from: "Utah Hospitality Insiders <onboarding@resend.dev>",
+      to: candidateEmail,
+      subject,
+      html,
+    });
+  } catch (emailErr) {
+    console.error("[QuickSignup] Welcome email failed (non-fatal):", emailErr);
   }
 
   return NextResponse.json({ success: true });

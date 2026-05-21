@@ -1,5 +1,7 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendJobAlert } from "@/lib/email/alerts";
+import type { JobListing } from "@/lib/types/database";
 
 export async function POST(request: NextRequest) {
   try {
@@ -110,8 +112,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const listingId = (listing as unknown as { id: string })?.id;
+
+    // Sponsored listings trigger immediate alerts to matched candidates
+    const source = sourceMap[emp.tier] || "free";
+    if (source === "sponsored" && listingId) {
+      try {
+        const alertListing: JobListing = {
+          id: listingId,
+          employer_id: emp.id,
+          employer_name: null,
+          source: "sponsored",
+          title,
+          description,
+          job_type: job_type || null,
+          category_id: category_id || null,
+          location_city,
+          location_region: location_region || null,
+          pay_min: pay_min || null,
+          pay_max: pay_max || null,
+          pay_type: pay_type || null,
+          application_method,
+          application_url: application_url || null,
+          is_featured: true,
+          is_active: true,
+          scraped_source_url: null,
+          posted_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          created_at: new Date().toISOString(),
+        };
+        await sendJobAlert(alertListing);
+      } catch (alertErr) {
+        console.error("[Listings] Alert send error (non-fatal):", alertErr);
+      }
+    }
+
     return Response.json(
-      { message: "Job posted successfully", id: (listing as unknown as { id: string })?.id },
+      { message: "Job posted successfully", id: listingId },
       { status: 201 }
     );
   } catch (error) {
