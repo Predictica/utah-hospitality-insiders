@@ -8,7 +8,10 @@ const REGIONS = [
   "Park City",
   "Provo / Orem",
   "Ogden",
+  "Logan",
+  "Brigham City",
   "St. George",
+  "Cedar City",
   "Moab",
   "Statewide",
 ];

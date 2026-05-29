@@ -16,9 +16,12 @@ const REGIONS = [
   "Park City",
   "Provo / Orem",
   "Ogden",
+  "Logan",
+  "Brigham City",
   "St. George",
+  "Cedar City",
   "Moab",
-  "Other",
+  "Statewide",
 ];
 
 function FilterPanelInner({ categories }: { categories: JobCategory[] }) {

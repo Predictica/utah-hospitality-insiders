@@ -7,9 +7,12 @@ import Link from "next/link";
 const REGIONS = [
   "Salt Lake City",
   "Park City",
-  "Provo/Orem",
+  "Provo / Orem",
   "Ogden",
+  "Logan",
+  "Brigham City",
   "St. George",
+  "Cedar City",
   "Moab",
 ];
 
