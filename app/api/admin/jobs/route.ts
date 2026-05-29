@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       application_url,
       source,
       is_featured,
+      expires_at,
     } = body;
 
     if (!title || !description || !location_city || !application_url) {
@@ -49,8 +50,9 @@ export async function POST(request: NextRequest) {
     }
 
     const now = new Date();
-    const expiresAt = new Date(now);
-    expiresAt.setDate(expiresAt.getDate() + 30);
+    const expiresAt = expires_at
+      ? new Date(expires_at + "T23:59:59Z")
+      : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
     const adminSupabase = getAdmin();
 

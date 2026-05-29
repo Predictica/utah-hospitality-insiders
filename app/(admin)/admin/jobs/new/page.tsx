@@ -33,6 +33,12 @@ const PAY_TYPES = [
 
 const SOURCES = ["free", "standard", "sponsored", "scraped"] as const;
 
+function defaultExpiresAt(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
+}
+
 export default function AdminNewJobPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
@@ -54,6 +60,7 @@ export default function AdminNewJobPage() {
     application_url: "",
     source: "free" as typeof SOURCES[number],
     is_featured: false,
+    expires_at: defaultExpiresAt(),
   });
 
   useEffect(() => {
@@ -102,6 +109,7 @@ export default function AdminNewJobPage() {
           application_url: form.application_url,
           source: form.source,
           is_featured: form.is_featured,
+          expires_at: form.expires_at,
         }),
       });
 
@@ -135,6 +143,7 @@ export default function AdminNewJobPage() {
       application_url: "",
       source: "free",
       is_featured: false,
+      expires_at: defaultExpiresAt(),
     });
   }
 
@@ -356,7 +365,7 @@ export default function AdminNewJobPage() {
         <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
           <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Admin Options</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Source</label>
               <select
@@ -368,6 +377,15 @@ export default function AdminNewJobPage() {
                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expires On</label>
+              <input
+                type="date"
+                value={form.expires_at}
+                onChange={(e) => update("expires_at", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1F4E79]"
+              />
             </div>
             <div className="flex items-end pb-1">
               <label className="flex items-center gap-2 cursor-pointer">
