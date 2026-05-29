@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import DashboardClient from "./DashboardClient";
+import DashboardProfile from "./DashboardProfile";
 
 export const metadata = {
   title: "Employer Dashboard — Utah Hospitality Insiders",
@@ -39,6 +40,7 @@ export default async function EmployerDashboardPage() {
     company_name: string;
     tier: string;
     email_verified: boolean;
+    logo_url: string | null;
   } | null;
 
   if (!employer) redirect("/employer/register");
@@ -132,6 +134,12 @@ export default async function EmployerDashboardPage() {
           verification link. You must verify your email before posting jobs.
         </div>
       )}
+
+      {/* Company Profile */}
+      <DashboardProfile
+        logoUrl={employer.logo_url}
+        companyName={employer.company_name}
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">

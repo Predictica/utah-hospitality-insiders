@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/blog/posts";
+import { getAllPostsAsync } from "@/lib/blog/posts";
 import BlogCard from "@/components/ui/BlogCard";
 
 export const metadata = {
@@ -6,8 +6,10 @@ export const metadata = {
   description: "Industry news, career tips, and insider resources for Utah hospitality professionals.",
 };
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export const dynamic = "force-dynamic";
+
+export default async function BlogPage() {
+  const posts = await getAllPostsAsync();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

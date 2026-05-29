@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 const TIERS = [
   {
     name: "Free (Small Business)",
-    price: "$0",
+    badge: "Available",
+    badgeColor: "bg-green-100 text-green-800",
     description: "Under 50 employees or 2 locations",
     features: [
       "1 active job listing",
@@ -22,10 +23,12 @@ const TIERS = [
       "Basic listing placement",
       "Standard search results",
     ],
+    available: true,
   },
   {
     name: "Standard",
-    price: "$49–$79/mo",
+    badge: "Coming Soon",
+    badgeColor: "bg-gray-100 text-gray-600",
     description: "Enhanced placement and analytics",
     features: [
       "Up to 10 active listings",
@@ -35,10 +38,12 @@ const TIERS = [
       "Email support",
     ],
     highlighted: true,
+    available: false,
   },
   {
     name: "Sponsored",
-    price: "$149–$199/mo",
+    badge: "Coming Soon",
+    badgeColor: "bg-gray-100 text-gray-600",
     description: "Maximum visibility and reach",
     features: [
       "Unlimited job listings",
@@ -48,6 +53,7 @@ const TIERS = [
       "Full analytics dashboard",
       "Dedicated account support",
     ],
+    available: false,
   },
 ];
 
@@ -116,13 +122,15 @@ export default function EmployersPage() {
                     : "bg-white border border-gray-200"
                 }`}
               >
-                <h3 className={`text-lg font-bold ${tier.highlighted ? "text-white" : "text-gray-900"}`}>
-                  {tier.name}
-                </h3>
-                <p className={`text-3xl font-bold mt-2 ${tier.highlighted ? "text-white" : "text-gray-900"}`}>
-                  {tier.price}
-                </p>
-                <p className={`text-sm mt-1 ${tier.highlighted ? "text-blue-200" : "text-gray-500"}`}>
+                <div className="flex items-center justify-between">
+                  <h3 className={`text-lg font-bold ${tier.highlighted ? "text-white" : "text-gray-900"}`}>
+                    {tier.name}
+                  </h3>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${tier.highlighted ? "bg-white/20 text-white" : tier.badgeColor}`}>
+                    {tier.badge}
+                  </span>
+                </div>
+                <p className={`text-sm mt-2 ${tier.highlighted ? "text-blue-200" : "text-gray-500"}`}>
                   {tier.description}
                 </p>
                 <ul className="mt-5 space-y-2.5 flex-1">
@@ -140,16 +148,25 @@ export default function EmployersPage() {
                     </li>
                   ))}
                 </ul>
-                <button
-                  disabled
-                  className={`mt-6 w-full py-2.5 rounded-lg font-medium transition-colors ${
-                    tier.highlighted
-                      ? "bg-white text-[#1F4E79] opacity-80 cursor-not-allowed"
-                      : "bg-[#1F4E79] text-white opacity-80 cursor-not-allowed"
-                  }`}
-                >
-                  Post a Job — Coming Soon
-                </button>
+                {tier.available ? (
+                  <a
+                    href="/employer/register"
+                    className="mt-6 block w-full py-2.5 rounded-lg font-medium text-center bg-[#1F4E79] text-white hover:bg-[#163a5c] transition-colors"
+                  >
+                    Get Started Free
+                  </a>
+                ) : (
+                  <button
+                    disabled
+                    className={`mt-6 w-full py-2.5 rounded-lg font-medium ${
+                      tier.highlighted
+                        ? "bg-white/20 text-white cursor-not-allowed"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Coming Soon
+                  </button>
+                )}
               </div>
             ))}
           </div>

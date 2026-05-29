@@ -8,7 +8,7 @@ import ApplyButton from "@/components/ui/ApplyButton";
 import QuickAlertSignup from "@/components/ui/QuickAlertSignup";
 
 interface JobListingDetail extends JobListing {
-  employers: { company_name: string; website: string | null } | null;
+  employers: { company_name: string; website: string | null; logo_url: string | null } | null;
   job_categories: { name: string } | null;
 }
 
@@ -17,7 +17,7 @@ async function getListing(id: string): Promise<JobListingDetail | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("job_listings")
-    .select("*, employers(company_name, website), job_categories(name)")
+    .select("*, employers(company_name, website, logo_url), job_categories(name)")
     .eq("id", id)
     .eq("is_active", true)
     .single();
@@ -94,6 +94,17 @@ export default async function JobDetailPage({
       </Link>
 
       <div className="bg-white border border-gray-200 rounded-lg p-6 sm:p-8">
+        <div className="flex items-start gap-4">
+          <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
+            {listing.employers?.logo_url ? (
+              <img src={listing.employers.logo_url} alt={displayEmployerName} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-2xl font-bold text-gray-300">
+                {displayEmployerName.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-2xl font-bold text-gray-900">{listing.title}</h1>
           {listing.is_featured && (
@@ -122,6 +133,8 @@ export default async function JobDetailPage({
         ) : (
           <p className="mt-1 text-[#1F4E79] font-medium">{displayEmployerName}</p>
         )}
+          </div>
+        </div>
 
         <div className="flex flex-wrap gap-2 mt-4 text-sm">
           {listing.location_city && (

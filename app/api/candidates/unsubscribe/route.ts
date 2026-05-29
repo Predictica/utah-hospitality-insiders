@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://utah-hospitality-insiders.vercel.app";
+      "https://utahhospitalityinsiders.com";
 
     return NextResponse.redirect(new URL("/candidates/unsubscribed", siteUrl));
   } catch (err) {

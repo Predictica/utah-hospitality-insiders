@@ -53,6 +53,7 @@ export default function PostJobForm({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [form, setForm] = useState({
     title: initialData?.title || "",
@@ -118,8 +119,12 @@ export default function PostJobForm({
 
       const data = await res.json();
       if (res.ok) {
-        router.push("/employer/dashboard");
-        router.refresh();
+        if (isEdit) {
+          router.push("/employer/dashboard");
+          router.refresh();
+        } else {
+          setSuccessMessage(data.message || "Job posted successfully!");
+        }
       } else {
         setError(data.error || "Failed to save listing");
       }
@@ -127,6 +132,26 @@ export default function PostJobForm({
       setError("Network error. Please try again.");
     }
     setLoading(false);
+  }
+
+  if (successMessage) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-gray-900 mb-3">Listing Submitted!</h2>
+        <p className="text-gray-600 text-sm mb-6 max-w-md mx-auto">{successMessage}</p>
+        <Link
+          href="/employer/dashboard"
+          className="inline-block bg-[#1F4E79] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#163a5c] transition-colors"
+        >
+          Go to Dashboard
+        </Link>
+      </div>
+    );
   }
 
   return (

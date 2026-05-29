@@ -81,26 +81,29 @@ export default function EmployerRegisterPage() {
     setLoading(false);
   }
 
-  const tierCards: { id: Tier; name: string; price: string; desc: string; selectable: boolean }[] = [
+  const tierCards: { id: Tier; name: string; badge: string; badgeColor: string; desc: string; selectable: boolean }[] = [
     {
       id: "free",
       name: "Free (Small Business)",
-      price: "$0",
+      badge: "Available Now",
+      badgeColor: "bg-green-100 text-green-800",
       desc: "Under 50 employees or 2 locations",
       selectable: true,
     },
     {
       id: "standard",
       name: "Standard",
-      price: "$49–$79/mo",
-      desc: "Coming soon",
+      badge: "Coming Soon",
+      badgeColor: "bg-gray-100 text-gray-600",
+      desc: "Enhanced placement and analytics",
       selectable: false,
     },
     {
       id: "sponsored",
       name: "Sponsored",
-      price: "$149–$199/mo",
-      desc: "Coming soon",
+      badge: "Coming Soon",
+      badgeColor: "bg-gray-100 text-gray-600",
+      desc: "Maximum visibility and reach",
       selectable: false,
     },
   ];
@@ -134,16 +137,13 @@ export default function EmployerRegisterPage() {
                   : "border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
               }`}
             >
-              <p className="font-semibold text-gray-900">{t.name}</p>
-              <p className="text-2xl font-bold text-[#1F4E79] mt-1">
-                {t.price}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">{t.desc}</p>
-              {!t.selectable && (
-                <span className="inline-block mt-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
-                  Coming Soon
+              <div className="flex items-center justify-between">
+                <p className="font-semibold text-gray-900">{t.name}</p>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded ${t.badgeColor}`}>
+                  {t.badge}
                 </span>
-              )}
+              </div>
+              <p className="text-xs text-gray-500 mt-2">{t.desc}</p>
             </button>
           ))}
         </div>

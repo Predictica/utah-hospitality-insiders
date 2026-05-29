@@ -2,7 +2,7 @@ import type { JobListing } from "@/lib/types/database";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://utah-hospitality-insiders.vercel.app";
+  "https://utahhospitalityinsiders.com";
 
 function formatPay(listing: JobListing): string {
   if (!listing.pay_min && !listing.pay_max) return "";
@@ -184,6 +184,89 @@ export function welcomeEmail(
   return {
     subject: "Welcome to Utah Hospitality Insiders Job Alerts",
     html: emailWrapper(content, email),
+  };
+}
+
+// ── Listing Pending Email (to employer) ──────────────────────────────
+
+export function listingPendingEmail(
+  employerName: string,
+  jobTitle: string,
+  companyName: string
+): { subject: string; html: string } {
+  const content = `
+    <tr>
+      <td style="padding: 24px;">
+        <h2 style="margin: 0 0 16px 0; font-size: 20px; color: #1F4E79;">Your Listing is Pending Review</h2>
+        <p style="margin: 0 0 12px 0; font-size: 15px; color: #374151; line-height: 1.6;">
+          Hi ${employerName.split(" ")[0] || "there"},
+        </p>
+        <p style="margin: 0 0 12px 0; font-size: 15px; color: #374151; line-height: 1.6;">
+          Your job listing <strong>"${jobTitle}"</strong> for ${companyName} has been submitted and is pending review by our team.
+        </p>
+        <p style="margin: 0 0 12px 0; font-size: 15px; color: #374151; line-height: 1.6;">
+          Free listings are typically reviewed and approved within 24 hours. We'll notify you by email once your listing is live.
+        </p>
+        <p style="margin: 0 0 20px 0; font-size: 15px; color: #374151; line-height: 1.6;">
+          You can check the status of your listing on your dashboard at any time.
+        </p>
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="border-radius: 6px; background-color: #1F4E79;">
+              <a href="${SITE_URL}/employer/dashboard"
+                 style="display: inline-block; padding: 12px 28px; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600;">
+                View Dashboard
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+
+  return {
+    subject: "Your Job Listing is Pending Review — Utah Hospitality Insiders",
+    html: emailWrapper(content, ""),
+  };
+}
+
+// ── Admin New Listing Email ──────────────────────────────────────────
+
+export function adminNewListingEmail(
+  jobTitle: string,
+  companyName: string,
+  employerEmail: string,
+  adminUrl: string
+): { subject: string; html: string } {
+  const content = `
+    <tr>
+      <td style="padding: 24px;">
+        <h2 style="margin: 0 0 16px 0; font-size: 20px; color: #1F4E79;">New Listing Pending Approval</h2>
+        <p style="margin: 0 0 12px 0; font-size: 15px; color: #374151; line-height: 1.6;">
+          A new job listing has been submitted and needs your review:
+        </p>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0; background-color: #f9fafb; border-radius: 8px;">
+          <tr><td style="padding: 16px;">
+            <p style="margin: 0 0 8px 0; font-size: 16px; color: #1F4E79; font-weight: 600;">${jobTitle}</p>
+            <p style="margin: 0 0 4px 0; font-size: 14px; color: #374151;"><strong>Company:</strong> ${companyName}</p>
+            <p style="margin: 0; font-size: 14px; color: #374151;"><strong>Employer Email:</strong> ${employerEmail}</p>
+          </td></tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="border-radius: 6px; background-color: #1F4E79;">
+              <a href="${adminUrl}"
+                 style="display: inline-block; padding: 12px 28px; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600;">
+                Review in Admin
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+
+  return {
+    subject: "New Job Listing Pending Approval",
+    html: emailWrapper(content, ""),
   };
 }
 

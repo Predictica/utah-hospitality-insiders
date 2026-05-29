@@ -21,7 +21,31 @@ export interface Employer {
   is_verified: boolean;
   is_active: boolean;
   email_verified: boolean;
+  logo_url: string | null;
   created_at: string;
+  updated_at: string;
+}
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  author: string;
+  category: string;
+  featured_image: string | null;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminSetting {
+  id: string;
+  key: string;
+  value: string;
+  description: string | null;
   updated_at: string;
 }
 
@@ -43,6 +67,7 @@ export interface JobListing {
   application_url: string | null;
   is_featured: boolean;
   is_active: boolean;
+  status: "active" | "pending" | "rejected" | "expired" | null;
   scraped_source_url: string | null;
   posted_at: string;
   expires_at: string;
@@ -201,6 +226,6 @@ export interface Database {
 }
 
 export interface JobListingWithEmployer extends JobListing {
-  employers: Pick<Employer, "company_name"> | null;
+  employers: Pick<Employer, "company_name" | "logo_url"> | null;
   job_categories: Pick<JobCategory, "name" | "slug"> | null;
 }

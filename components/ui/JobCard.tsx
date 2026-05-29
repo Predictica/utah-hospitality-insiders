@@ -35,19 +35,33 @@ export default function JobCard({ listing }: { listing: JobListingWithEmployer }
     year: "numeric",
   });
 
+  const employerName = listing.employers?.company_name || listing.employer_name || "";
+  const logoUrl = listing.employers?.logo_url;
+
   return (
     <Link
       href={`/jobs/${listing.id}`}
       className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="font-semibold text-gray-900 text-lg truncate">{listing.title}</h3>
-          {(listing.employers || listing.employer_name) && (
-            <p className="text-[#1F4E79] font-medium text-sm mt-0.5">
-              {listing.employers?.company_name || listing.employer_name}
-            </p>
-          )}
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
+            {logoUrl ? (
+              <img src={logoUrl} alt={employerName} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm font-bold text-gray-300">
+                {(employerName || "U").charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-gray-900 text-lg truncate">{listing.title}</h3>
+            {employerName && (
+              <p className="text-[#1F4E79] font-medium text-sm mt-0.5">
+                {employerName}
+              </p>
+            )}
+          </div>
         </div>
         <div className="flex gap-2 shrink-0">
           {listing.is_featured && (
