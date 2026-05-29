@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 interface Category {
@@ -47,6 +47,13 @@ export default function AdminNewJobPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const lastPosting = useRef<{
+    employer_name: string;
+    location_city: string;
+    location_region: string;
+    application_method: "external_link" | "email";
+    application_url: string;
+  } | null>(null);
 
   const [form, setForm] = useState({
     employer_name: "",
@@ -117,6 +124,13 @@ export default function AdminNewJobPage() {
       });
 
       if (res.ok) {
+        lastPosting.current = {
+          employer_name: form.employer_name,
+          location_city: form.location_city,
+          location_region: form.location_region,
+          application_method: form.application_method,
+          application_url: form.application_url,
+        };
         setSuccess(true);
       } else {
         const data = await res.json();
@@ -148,6 +162,18 @@ export default function AdminNewJobPage() {
       is_featured: false,
       expires_at: defaultExpiresAt(),
     });
+  }
+
+  function handleCopyLast() {
+    if (!lastPosting.current) return;
+    setForm((prev) => ({
+      ...prev,
+      employer_name: lastPosting.current!.employer_name,
+      location_city: lastPosting.current!.location_city,
+      location_region: lastPosting.current!.location_region,
+      application_method: lastPosting.current!.application_method,
+      application_url: lastPosting.current!.application_url,
+    }));
   }
 
   if (success) {
@@ -198,7 +224,21 @@ export default function AdminNewJobPage() {
           <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Employer & Role</h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Employer Name</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">Employer Name</label>
+              {lastPosting.current && (
+                <button
+                  type="button"
+                  onClick={handleCopyLast}
+                  className="text-xs text-[#1F4E79] font-medium hover:underline flex items-center gap-1"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Last Employer
+                </button>
+              )}
+            </div>
             <input
               type="text"
               value={form.employer_name}
