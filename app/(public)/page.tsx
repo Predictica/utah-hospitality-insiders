@@ -61,6 +61,11 @@ export default function HomePage() {
       {/* Hero */}
       <section className="bg-[#1F4E79] text-white py-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
+          <img
+            src="/logo.png"
+            alt="Utah Hospitality Insiders"
+            className="mx-auto mb-6 w-40 sm:w-[200px] h-auto"
+          />
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
             Utah&apos;s Hospitality Jobs Community
           </h1>

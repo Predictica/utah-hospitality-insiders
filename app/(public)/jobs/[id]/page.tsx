@@ -96,13 +96,11 @@ export default async function JobDetailPage({
       <div className="bg-white border border-gray-200 rounded-lg p-6 sm:p-8">
         <div className="flex items-start gap-4">
           <div className="w-20 h-20 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
-            {listing.employers?.logo_url ? (
-              <img src={listing.employers.logo_url} alt={displayEmployerName} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-2xl font-bold text-gray-300">
-                {displayEmployerName.charAt(0).toUpperCase()}
-              </span>
-            )}
+            <img
+              src={listing.employers?.logo_url || "/logo.png"}
+              alt={displayEmployerName}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">

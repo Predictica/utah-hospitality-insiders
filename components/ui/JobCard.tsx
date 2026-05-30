@@ -46,13 +46,11 @@ export default function JobCard({ listing }: { listing: JobListingWithEmployer }
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           <div className="w-10 h-10 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center shrink-0">
-            {logoUrl ? (
-              <img src={logoUrl} alt={employerName} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-sm font-bold text-gray-300">
-                {(employerName || "U").charAt(0).toUpperCase()}
-              </span>
-            )}
+            <img
+              src={logoUrl || "/logo.png"}
+              alt={employerName || "Utah Hospitality Insiders"}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 text-lg truncate">{listing.title}</h3>
